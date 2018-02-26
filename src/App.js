@@ -1,20 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Splash from './Splash'
+import Catalogue from './Catalogue';
 import './App.css';
-import Cart from './Cart.js';
+import { Link, Route, Switch, withRouter } from 'react-router-dom';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      products: []
+    }
+  }
+
+  componentDidMount() {
+    fetch('/api/catalogue')
+      .then(res => res.json())
+      .then(products => this.setState({ products }))
+      .catch(err => console.log(err))
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <Cart />
+        
+        <Link to='/catalogue'> Catalogue </Link>
+        <Switch>
+          <Route exact path="/" render={() => <Splash/>} />
+          <Route exact path="/catalogue" render={ () => this.state.products.length ? 
+            <Catalogue products={this.state.products} /> : 
+            <h1>Loading...</h1> } />
+        </Switch>
       </div>
     );
   }
